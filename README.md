@@ -60,3 +60,11 @@ features](https://www.elastic.co/subscriptions).
 
 View the detailed release notes
 [here](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/es-release-notes.html).
+
+## Addition
+
+- Support elasticsearch 6.8 ARM64
+- Support kibana 6.8 ARM64
+```
+
+```

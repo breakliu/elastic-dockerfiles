@@ -6,11 +6,20 @@
 # Build stage 0
 # Extract Kibana and make various file manipulations.
 ################################################################################
-FROM centos:7 AS prep_files
+FROM cdchub.tencentcloudcr.com/public/centos:7-$TARGETARCH AS prep_files
+ARG ARCH=x64
+
 RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-6.8.23-linux-x86_64.tar.gz && cd -
 RUN mkdir /usr/share/kibana
 WORKDIR /usr/share/kibana
 RUN tar --strip-components=1 -zxf /opt/kibana-6.8.23-linux-x86_64.tar.gz
+
+# node of arm64 if need
+RUN curl --retry 8 -s -L -O https://nodejs.org/download/release/v10.24.1/node-v10.24.1-linux-$ARCH.tar.gz && \
+    tar xf node-v10.24.1-linux-$ARCH.tar.gz && \
+    rm -rf node node-v10.24.1-linux-$ARCH.tar.gz && \
+    mv node-v10.24.1-linux-$ARCH node
+
 # Ensure that group permissions are the same as user permissions.
 # This will help when relying on GID-0 to run Kibana, rather than UID-1000.
 # OpenShift does this, for example.
@@ -22,7 +31,7 @@ RUN find /usr/share/kibana -type d -exec chmod g+s {} \;
 # Build stage 1
 # Copy prepared files from the previous stage and complete the image.
 ################################################################################
-FROM centos:7
+FROM cdchub.tencentcloudcr.com/public/centos:7-$TARGETARCH
 EXPOSE 5601
 
 # Add Reporting dependencies.
